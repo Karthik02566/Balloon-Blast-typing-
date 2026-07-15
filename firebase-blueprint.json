@@ -1,0 +1,47 @@
+{
+  "entities": {
+    "LeaderboardEntry": {
+      "title": "Leaderboard Entry",
+      "description": "A score entry for the typing game leaderboard.",
+      "type": "object",
+      "properties": {
+        "playerName": {
+          "type": "string",
+          "description": "Name of the player"
+        },
+        "wpm": {
+          "type": "number",
+          "description": "Words per minute"
+        },
+        "accuracy": {
+          "type": "number",
+          "description": "Typing accuracy percentage"
+        },
+        "wordsTyped": {
+          "type": "number",
+          "description": "Total words typed in the session"
+        },
+        "score": {
+          "type": "number",
+          "description": "Overall score"
+        },
+        "difficulty": {
+          "type": "string",
+          "description": "Difficulty level of the game (Beginner, Intermediate, Pro)"
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the score was recorded"
+        }
+      },
+      "required": ["playerName", "wpm", "accuracy", "score", "difficulty", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/leaderboard/{entryId}": {
+      "schema": "LeaderboardEntry",
+      "description": "Global leaderboard entries"
+    }
+  }
+}

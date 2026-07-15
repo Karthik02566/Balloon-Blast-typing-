@@ -1,0 +1,38 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isValidLeaderboardEntry(data) {
+      return data.keys().hasAll(['playerName', 'wpm', 'accuracy', 'wordsTyped', 'score', 'timestamp', 'difficulty'])
+        && data.keys().size() == 7
+        && data.playerName is string && data.playerName.size() <= 20
+        && data.wpm is number && data.wpm >= 0
+        && data.accuracy is number && data.accuracy >= 0 && data.accuracy <= 100
+        && data.wordsTyped is number && data.wordsTyped >= 0
+        && data.score is number && data.score >= 0
+        && data.difficulty is string && data.difficulty.size() <= 20
+        && data.timestamp is timestamp;
+    }
+
+    match /leaderboard/{entryId} {
+      allow read: if true;
+      allow create: if isValidId(entryId) 
+        && isValidLeaderboardEntry(request.resource.data)
+        && request.resource.data.timestamp == request.time;
+      // No updates or deletes for leaderboard entries to maintain integrity
+    }
+  }
+}
